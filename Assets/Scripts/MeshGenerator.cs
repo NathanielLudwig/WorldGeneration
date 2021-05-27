@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 [ExecuteInEditMode]
@@ -14,22 +15,39 @@ public class MeshGenerator : MonoBehaviour
     private FastNoiseLite noise;
     private int numTris;
     private Triangle[] triangles;
+    private bool settingsChanged;
+    
     // Start is called before the first frame update
     private void Start()
     {
-        noise = new FastNoiseLite(seed);
-        noise.SetNoiseType(FastNoiseLite.NoiseType.Perlin);
         mesh = new Mesh();
         GetComponent<MeshFilter>().mesh = mesh;
+    }
 
+    private void OnValidate()
+    {
+        settingsChanged = true;
+    }
+
+    private void Update()
+    {
+        if (settingsChanged)
+        {
+            Run();
+            settingsChanged = false;
+        }
+    }
+
+    private void Run()
+    {
         Init();
-        CalculateDensity();
-        numTris = March();
         UpdateMesh();
     }
 
     private void Init()
     {
+        noise = new FastNoiseLite(seed);
+        noise.SetNoiseType(FastNoiseLite.NoiseType.OpenSimplex2);
         int numPoints = numPointsPerAxis * numPointsPerAxis * numPointsPerAxis;
         int numVoxelsPerAxis = numPointsPerAxis - 1;
         int numVoxels = numVoxelsPerAxis * numVoxelsPerAxis * numVoxelsPerAxis;
@@ -42,8 +60,9 @@ public class MeshGenerator : MonoBehaviour
 
     private void UpdateMesh()
     {
+        CalculateDensity();
+        numTris = March();
         mesh.Clear();
-
         Vector3[] vertices = new Vector3[numTris * 3];
         int[] meshTriangles = new int[numTris * 3];
         for (int i = 0; i < numTris; i++) {
@@ -65,7 +84,7 @@ public class MeshGenerator : MonoBehaviour
             {
                 for (int z = 0; z < numPointsPerAxis; z++)
                 {
-                    float density = -(y-10) + ((noise.GetNoise(x, z) + noise.GetNoise(x, z) + noise.GetNoise(x, z)) * 5);
+                    float density = -(y-15) + ((noise.GetNoise(x, z) + noise.GetNoise(x, z) + noise.GetNoise(x, z)) * 5);
                     points[IndexFromCoord(x, y, z)] = new Point {pos = new Vector3(x, y, z), density = density};
                 }
             }
