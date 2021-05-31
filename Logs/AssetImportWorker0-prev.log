@@ -162,3 +162,4 @@ Received Import Request.
 Start importing Assets/Scenes/MeshGenerationTesting.unity using Guid(bd4ad1148cf7fc74b965ba7dcd072fdf) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '569e9b260207d0653a0d73d70363ded5') in 0.008564 seconds
   Import took 0.027555 seconds .
 
+AssetImportWorkerClient::OnTransportError - code=2 error=End of file
