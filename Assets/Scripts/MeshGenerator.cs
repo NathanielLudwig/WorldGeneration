@@ -10,7 +10,10 @@ public class MeshGenerator : MonoBehaviour
 
     public float isoLevel;
     public int numPointsPerAxis = 30;
-
+    public int octaves;
+    public float frequency;
+    public float lacunarity;
+    public float amplitude;
     public int seed;
     private FastNoiseLite noise;
     private int numTris;
@@ -48,6 +51,10 @@ public class MeshGenerator : MonoBehaviour
     {
         noise = new FastNoiseLite(seed);
         noise.SetNoiseType(FastNoiseLite.NoiseType.OpenSimplex2);
+        noise.SetFractalType(FastNoiseLite.FractalType.FBm);
+        noise.SetFractalOctaves(octaves);
+        noise.SetFrequency(frequency);
+        //noise.SetFractalLacunarity(lacunarity);
         int numPoints = numPointsPerAxis * numPointsPerAxis * numPointsPerAxis;
         int numVoxelsPerAxis = numPointsPerAxis - 1;
         int numVoxels = numVoxelsPerAxis * numVoxelsPerAxis * numVoxelsPerAxis;
@@ -84,7 +91,7 @@ public class MeshGenerator : MonoBehaviour
             {
                 for (int z = 0; z < numPointsPerAxis; z++)
                 {
-                    float density = -(y-15) + ((noise.GetNoise(x, z) + noise.GetNoise(x, z) + noise.GetNoise(x, z)) * 5);
+                    float density = -(y-15) + (noise.GetNoise(x,z) * amplitude);
                     points[IndexFromCoord(x, y, z)] = new Point {pos = new Vector3(x, y, z), density = density};
                 }
             }
